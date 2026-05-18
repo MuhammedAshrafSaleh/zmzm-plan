@@ -235,6 +235,37 @@
 </footer>
 
 <script>
+// Items already starting with an emoji/symbol keep theirs; everything else gets ✅
+const EMOJI_LEAD = /^(\s*)([\u2600-\u27BF\u{1F300}-\u{1FAFF}✅❌💰🤔✂️⚠️❓])/u;
+function valueLine(item) {
+  return EMOJI_LEAD.test(item) ? item : '✅ ' + item;
+}
+
+// Highlight the brand name in inline HTML
+function emphasizeBrand(text) {
+  return text.replace(/(Zmzm Decoration|ZMZM Decoration)/g,
+    '<span class="o">$1</span>');
+}
+
+// Build the plain-text caption (what gets copied to clipboard)
+function buildCaption(v) {
+  const DIV = '\n\n---\n\n';
+  const valueBlock = v.value.length
+    ? v.value.map(valueLine).join('\n') + (v.valueNote ? '\n\n' + v.valueNote : '')
+    : (v.valueNote || '');
+
+  const parts = [
+    `"${v.hook}"`,
+    v.problem,
+    valueBlock,
+    v.brandLink,
+    v.cta,
+    'ومتنساش لو عايز تعرف الجديد.. تابع رامي فريد 👍'
+  ].filter(Boolean);
+
+  return parts.join(DIV);
+}
+
 function renderVideos() {
   const list = document.getElementById('videosList');
   const html = window.VIDEOS.map(v => {
@@ -248,6 +279,40 @@ function renderVideos() {
         </tbody>
       </table>
     ` : '';
+
+    // ---- Post-ready caption HTML ----
+    const checksHtml = v.value.length
+      ? `<ul class="post-checks">${v.value.map(x => `<li>${valueLine(x)}</li>`).join('')}</ul>`
+      : '';
+    const valueDivider = (v.value.length || v.valueNote) ? '<hr class="post-divider">' : '';
+    const valueNoteHtml = v.valueNote ? `<p class="post-paragraph muted">${v.valueNote}</p>` : '';
+
+    const postCaption = `
+      <footer class="post-caption">
+        <div class="post-head">
+          <div class="label">Ready&nbsp;to&nbsp;Post · Caption <span class="ar">السكريبت الجاهز للنشر</span></div>
+          <button class="copy-btn" data-vn="${v.n}" type="button">
+            <span class="ic">⎘</span>
+            <span class="t">نسخ النص</span>
+          </button>
+        </div>
+        <div class="post-body" id="post-${v.n}">
+          <p class="post-hook">"${v.hook}"</p>
+          <hr class="post-divider">
+          <p class="post-paragraph">${v.problem}</p>
+          ${valueDivider}
+          ${checksHtml}
+          ${checksHtml && valueNoteHtml ? '' : ''}
+          ${valueNoteHtml}
+          <hr class="post-divider">
+          <p class="post-paragraph brand">${emphasizeBrand(v.brandLink)}</p>
+          <hr class="post-divider">
+          <p class="post-paragraph cta">${v.cta}</p>
+          <hr class="post-divider">
+          <p class="post-follow">ومتنساش لو عايز تعرف الجديد.. تابع <span class="name">رامي فريد</span> 👍</p>
+        </div>
+      </footer>
+    `;
 
     return `
     <article class="video" data-screen-label="V${String(v.n).padStart(2,'0')} ${v.theme}">
@@ -312,13 +377,47 @@ function renderVideos() {
           </div>
         </div>
       </div>
+
+      ${postCaption}
     </article>
     `;
   }).join('');
   list.innerHTML = html;
 }
 
-window.addEventListener('DOMContentLoaded', renderVideos);
+// ---- Copy-caption handler (event-delegated) ----
+function attachCopyHandler() {
+  document.addEventListener('click', async e => {
+    const btn = e.target.closest('.copy-btn');
+    if (!btn) return;
+    const vn = parseInt(btn.dataset.vn, 10);
+    const v = window.VIDEOS.find(x => x.n === vn);
+    if (!v) return;
+    const text = buildCaption(v);
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (err) {
+      // fallback for older browsers
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy'); ta.remove();
+    }
+    const tEl = btn.querySelector('.t');
+    const original = tEl.textContent;
+    btn.classList.add('copied');
+    tEl.textContent = 'تم النسخ ✓';
+    clearTimeout(btn._t);
+    btn._t = setTimeout(() => {
+      btn.classList.remove('copied');
+      tEl.textContent = original;
+    }, 1800);
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  renderVideos();
+  attachCopyHandler();
+});
 </script>
 </body>
 </html>
