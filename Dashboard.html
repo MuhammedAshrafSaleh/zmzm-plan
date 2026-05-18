@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interactive Dashboard — ZMZM Decoration</title>
+<link rel="stylesheet" href="brand.css">
+<script src="data.js" defer></script>
+<style>
+  body { background: var(--paper); min-height: 100vh; }
+
+  /* ============ TOP BAR ============ */
+  .topbar {
+    background: var(--ink); color: var(--white);
+    padding: 18px 32px; display: flex; align-items: center; gap: 24px;
+    border-bottom: 1px solid var(--hairline-light);
+  }
+  .topbar .crumb {
+    display: flex; align-items: center; gap: 12px;
+    font-family: var(--font-en); font-size: 11px; letter-spacing: 0.2em;
+    color: var(--ink-300);
+  }
+  .topbar .crumb a { color: inherit; text-decoration: none; }
+  .topbar .crumb a:hover { color: var(--orange); }
+  .topbar .crumb .sep { opacity: 0.4; }
+  .topbar .crumb .now { color: var(--orange); }
+
+  .topbar .right {
+    margin-inline-start: auto; display: flex; align-items: center; gap: 16px;
+    font-family: var(--font-en); font-size: 11px; letter-spacing: 0.18em;
+    color: var(--ink-300);
+  }
+  .topbar .right .live { color: var(--orange); display: flex; gap: 8px; align-items: center; }
+  .topbar .right .live .pulse {
+    width: 7px; height: 7px; background: var(--orange); border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  /* ============ LAYOUT ============ */
+  .shell {
+    display: grid; grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* ============ SIDEBAR ============ */
+  aside.side {
+    background: var(--white);
+    border-inline-end: 1px solid var(--hairline);
+    padding: 28px 24px; position: sticky; top: 64px; height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+  aside.side h4 {
+    font-family: var(--font-en); font-size: 10.5px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--ink-500); margin: 0 0 12px;
+    font-weight: 600;
+  }
+  aside.side h4:not(:first-of-type) { margin-top: 32px; }
+
+  .filter-btn {
+    display: flex; justify-content: space-between; align-items: center;
+    width: 100%; text-align: right;
+    padding: 11px 14px; margin-bottom: 4px;
+    background: transparent; border: 1px solid transparent;
+    border-radius: var(--r-sm);
+    font: inherit; cursor: pointer;
+    font-size: 14px; font-weight: 600; color: var(--ink);
+    transition: all .15s;
+  }
+  .filter-btn:hover { background: var(--paper-2); }
+  .filter-btn.active { background: var(--ink); color: var(--white); }
+  .filter-btn .count {
+    font-family: var(--font-en); font-size: 11px;
+    background: rgba(0,0,0,0.06); color: var(--ink-500);
+    padding: 2px 8px; border-radius: 999px; font-weight: 500;
+  }
+  .filter-btn.active .count { background: var(--orange); color: var(--white); }
+  .filter-btn .swatch {
+    display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+    margin-inline-end: 8px; vertical-align: middle;
+  }
+
+  .month-btn .lbl { display: block; font-size: 13px; }
+  .month-btn .sub {
+    display: block; font-family: var(--font-en); font-size: 10px;
+    color: var(--ink-500); letter-spacing: 0.14em; margin-top: 3px;
+    font-weight: 500;
+  }
+  .filter-btn.active .month-btn .sub { color: rgba(255,255,255,0.7); }
+  .filter-btn.active .sub { color: rgba(255,255,255,0.7); }
+
+  /* ============ MAIN ============ */
+  main.main { padding: 32px 40px; }
+
+  /* Header */
+  .head-wrap {
+    display: flex; justify-content: space-between; align-items: end;
+    margin-bottom: 28px;
+  }
+  .head-wrap h1 {
+    font-size: 56px; line-height: 1; font-weight: 900; margin: 0;
+    letter-spacing: -0.03em;
+  }
+  .head-wrap h1 .o { color: var(--orange); }
+  .head-wrap .meta {
+    font-family: var(--font-en); font-size: 12px; letter-spacing: 0.18em;
+    color: var(--ink-500); text-transform: uppercase; margin-bottom: 14px;
+  }
+  .head-wrap .meta::before { content: ''; display: inline-block;
+    width: 24px; height: 1.5px; background: var(--orange);
+    vertical-align: middle; margin-inline-end: 10px; }
+
+  .stats-strip {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px;
+    background: var(--hairline); border: 1px solid var(--hairline);
+    border-radius: var(--r-md); overflow: hidden; margin-bottom: 32px;
+  }
+  .stats-strip .stat {
+    background: var(--white); padding: 22px 24px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .stats-strip .stat .n {
+    font-family: var(--font-en); font-size: 38px; font-weight: 700;
+    line-height: 1; letter-spacing: -0.02em;
+  }
+  .stats-strip .stat .n .o { color: var(--orange); }
+  .stats-strip .stat .lbl {
+    font-family: var(--font-en); font-size: 10.5px; letter-spacing: 0.18em;
+    color: var(--ink-500); text-transform: uppercase;
+  }
+  .stats-strip .stat .delta { font-size: 12px; color: var(--ink-700); }
+
+  /* Active filter banner */
+  .filter-banner {
+    display: flex; gap: 10px; align-items: center; margin-bottom: 20px;
+    font-size: 13px;
+  }
+  .filter-banner .lbl {
+    font-family: var(--font-en); font-size: 11px; letter-spacing: 0.18em;
+    color: var(--ink-500); text-transform: uppercase;
+  }
+  .filter-banner .tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; border-radius: 999px; background: var(--ink); color: var(--white);
+    font-weight: 600;
+  }
+  .filter-banner .tag .x { cursor: pointer; opacity: .7; }
+  .filter-banner .tag .x:hover { opacity: 1; }
+  .filter-banner .clear-all {
+    margin-inline-start: auto;
+    font-family: var(--font-en); font-size: 11px; letter-spacing: 0.16em;
+    color: var(--orange); text-transform: uppercase; cursor: pointer;
+    background: none; border: none; font-weight: 600;
+  }
+
+  /* ============ GRID/LIST OF POSTS ============ */
+  .view-toggle {
+    display: flex; gap: 4px; margin-bottom: 20px;
+    background: var(--white); border: 1px solid var(--hairline);
+    border-radius: 999px; padding: 4px; width: fit-content;
+  }
+  .view-toggle button {
+    border: none; background: transparent; padding: 8px 16px;
+    border-radius: 999px; cursor: pointer; font-family: var(--font-en);
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-500); font-weight: 600;
+  }
+  .view-toggle button.active { background: var(--ink); color: var(--white); }
+
+  .grid-view {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .post-card {
+    background: var(--white); border: 1px solid var(--hairline);
+    border-radius: var(--r-md); overflow: hidden; cursor: pointer;
+    transition: all .2s ease; position: relative;
+    display: flex; flex-direction: column;
+  }
+  .post-card:hover {
+    transform: translateY(-2px); border-color: var(--ink);
+    box-shadow: var(--sh-2);
+  }
+  .post-card .accent {
+    height: 4px; width: 100%;
+  }
+  .post-card[data-pillar="freevalue"] .accent { background: var(--orange); }
+  .post-card[data-pillar="interior"] .accent { background: var(--yellow); }
+  .post-card[data-pillar="watchout"] .accent { background: var(--red); }
+  .post-card[data-pillar="projects"] .accent { background: var(--ink); }
+
+  .post-card .body { padding: 18px 18px 20px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .post-card .meta-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-en); font-size: 11px; letter-spacing: 0.14em;
+    color: var(--ink-500); text-transform: uppercase; font-weight: 600;
+  }
+  .post-card .pillar-name {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .post-card .pillar-name .dot {
+    width: 8px; height: 8px; border-radius: 2px;
+  }
+  .post-card[data-pillar="freevalue"] .pillar-name .dot { background: var(--orange); }
+  .post-card[data-pillar="interior"] .pillar-name .dot { background: var(--yellow); }
+  .post-card[data-pillar="watchout"] .pillar-name .dot { background: var(--red); }
+  .post-card[data-pillar="projects"] .pillar-name .dot { background: var(--ink); }
+  .post-card .wk { color: var(--orange); }
+  .post-card .date {
+    font-family: var(--font-ar); font-size: 12px; color: var(--ink-500);
+    font-weight: 600;
+  }
+  .post-card h3 { font-size: 16.5px; line-height: 1.35; margin: 4px 0 0; font-weight: 800; letter-spacing: -0.01em; }
+  .post-card .hook {
+    font-size: 13px; color: var(--ink-500); line-height: 1.55;
+    border-inline-start: 2px solid var(--orange); padding-inline-start: 10px;
+    margin-top: 4px; font-style: italic;
+  }
+  .post-card .format {
+    margin-top: auto; padding-top: 12px;
+    font-family: var(--font-en); font-size: 10.5px; letter-spacing: 0.16em;
+    color: var(--ink-500); text-transform: uppercase;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .post-card .format .open {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%; background: var(--paper-2);
+    color: var(--ink); font-size: 14px; font-family: var(--font-en);
+  }
+  .post-card:hover .format .open { background: var(--orange); color: var(--white); }
+
+  /* List view */
+  .list-view {
+    background: var(--white); border: 1px solid var(--hairline);
+    border-radius: var(--r-md); overflow: hidden;
+  }
+  .list-view .row {
+    display: grid; grid-template-columns: 50px 90px 100px 130px 1fr 140px 60px;
+    gap: 16px; align-items: center; padding: 14px 20px;
+    border-bottom: 1px solid var(--hairline); cursor: pointer;
+    font-size: 13.5px;
+  }
+  .list-view .row:last-child { border-bottom: none; }
+  .list-view .row:hover { background: var(--paper-2); }
+  .list-view .head {
+    background: var(--ink); color: var(--white);
+    font-family: var(--font-en); font-size: 10.5px; letter-spacing: 0.18em;
+    text-transform: uppercase; cursor: default; font-weight: 600;
+  }
+  .list-view .head:hover { background: var(--ink); }
+  .list-view .row .wk { font-family: var(--font-en); font-weight: 700; color: var(--orange); }
+  .list-view .row .pillar-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-en); font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; font-weight: 600;
+  }
+  .list-view .row .pillar-tag .dot { width: 8px; height: 8px; border-radius: 2px; }
+  .list-view .row[data-pillar="freevalue"] .dot { background: var(--orange); }
+  .list-view .row[data-pillar="interior"] .dot { background: var(--yellow); }
+  .list-view .row[data-pillar="watchout"] .dot { background: var(--red); }
+  .list-view .row[data-pillar="projects"] .dot { background: var(--ink); }
+  .list-view .row .title { font-weight: 700; }
+  .list-view .row .format {
+    font-family: var(--font-en); font-size: 11px; letter-spacing: 0.1em;
+    color: var(--ink-500); text-transform: uppercase;
+  }
+  .list-view .row .open-btn { text-align: end; color: var(--ink-300); }
+
+  /* Empty state */
+  .empty {
+    text-align: center; padding: 80px 20px; color: var(--ink-500);
+  }
+  .empty h3 { font-size: 24px; color: var(--ink); margin: 0 0 8px; }
+
+  /* ============ MODAL ============ */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(10,10,10,0.6);
+    z-index: 100; display: none; align-items: center; justify-content: center;
+    padding: 40px; backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--paper); border-radius: var(--r-lg);
+    max-width: 760px; width: 100%; max-height: 88vh; overflow-y: auto;
+    box-shadow: var(--sh-3); position: relative;
+  }
+  .modal .modal-head {
+    padding: 24px 32px; display: flex; justify-content: space-between; align-items: start;
+    border-bottom: 1px solid var(--hairline);
+    position: sticky; top: 0; background: var(--paper); z-index: 2;
+  }
+  .modal .modal-head .left { display: flex; flex-direction: column; gap: 6px; }
+  .modal .modal-head .left .top {
+    display: flex; gap: 10px; align-items: center;
+    font-family: var(--font-en); font-size: 11px; letter-spacing: 0.18em;
+    color: var(--ink-500); text-transform: uppercase; font-weight: 600;
+  }
+  .modal .modal-head .left .top .wk { color: var(--orange); }
+  .modal .modal-head .left .top .dot { width: 8px; height: 8px; border-radius: 2px; }
+  .modal .modal-head h2 {
+    font-size: 28px; line-height: 1.15; margin: 0;
+    font-weight: 900; letter-spacing: -0.02em;
+  }
+  .modal .close-btn {
+    background: var(--ink); color: var(--white); border: none;
+    width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+    font-size: 18px; flex: none;
+  }
+  .modal .modal-body { padding: 24px 32px 32px; }
+  .modal .field { margin-bottom: 24px; }
+  .modal .field .k {
+    font-family: var(--font-en); font-size: 10.5px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--orange); font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .modal .field .v { font-size: 16px; line-height: 1.65; color: var(--ink); }
+  .modal .field.hook .v {
+    font-weight: 700; font-style: italic; padding: 14px 18px;
+    background: var(--white); border-inline-start: 3px solid var(--orange);
+    border-radius: var(--r-sm);
+  }
+  .modal .field.cta .v {
+    background: var(--ink); color: var(--white); padding: 12px 16px;
+    border-radius: var(--r-sm); font-size: 14px;
+  }
+  .modal .post-preview {
+    background: var(--ink); color: var(--white); border-radius: var(--r-md);
+    padding: 32px 28px; margin-bottom: 24px;
+    position: relative; overflow: hidden;
+    min-height: 280px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .modal .post-preview[data-pillar="interior"] {
+    background: linear-gradient(135deg, var(--orange), var(--yellow));
+    color: var(--ink);
+  }
+  .modal .post-preview[data-pillar="watchout"] {
+    background: linear-gradient(135deg, var(--red), #8a1612);
+  }
+  .modal .post-preview[data-pillar="projects"] {
+    background: var(--paper-2); color: var(--ink);
+  }
+  .modal .post-preview::after {
+    content: ''; position: absolute; right: -60px; bottom: -60px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+  }
+  .modal .post-preview .hook-big {
+    font-size: 24px; font-weight: 900; line-height: 1.15;
+    letter-spacing: -0.015em; position: relative; z-index: 2;
+    text-wrap: balance;
+  }
+  .modal .post-preview .meta-top {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-en); font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; opacity: .7; position: relative; z-index: 2;
+  }
+  .modal .post-preview .brand-bot {
+    display: flex; justify-content: space-between; align-items: end;
+    font-family: var(--font-en); font-size: 11px; letter-spacing: 0.2em;
+    opacity: .7; position: relative; z-index: 2;
+  }
+  .modal .nav-btns {
+    display: flex; justify-content: space-between; gap: 12px;
+    padding: 18px 32px; border-top: 1px solid var(--hairline);
+    background: var(--white); position: sticky; bottom: 0;
+  }
+  .modal .nav-btns button {
+    flex: 1; padding: 12px 20px; background: var(--white);
+    border: 1px solid var(--hairline-strong); border-radius: 999px;
+    cursor: pointer; font-family: var(--font-ar); font-weight: 700;
+    font-size: 14px;
+  }
+  .modal .nav-btns button:hover { background: var(--ink); color: var(--white); border-color: var(--ink); }
+  .modal .nav-btns button:disabled { opacity: .3; cursor: not-allowed; }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: 1fr; }
+    aside.side { position: static; height: auto; }
+    main.main { padding: 20px; }
+    .stats-strip { grid-template-columns: 1fr 1fr; }
+    .head-wrap { flex-direction: column; align-items: start; }
+    .head-wrap h1 { font-size: 36px; }
+    .list-view .row { grid-template-columns: 50px 1fr; }
+    .list-view .row > *:not(:nth-child(1)):not(.title) { display: none; }
+  }
+</style>
+</head>
+<body data-screen-label="00 Dashboard">
+
+<header class="topbar">
+  <a class="zmzm-mark invert" href="index.html">
+    <div class="bars">
+      <div class="bar b1"></div><div class="bar b2"></div><div class="bar b3"></div>
+    </div>
+    <div class="wordmark">ZMZM<small>DECORATION</small></div>
+  </a>
+  <div class="crumb">
+    <a href="index.html">Plan</a>
+    <span class="sep">/</span>
+    <span class="now">Interactive Dashboard</span>
+  </div>
+  <div class="right">
+    <span>13 WEEKS · 52 POSTS</span>
+    <span class="live"><span class="pulse"></span>MAY → AUG 2026</span>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- ====== SIDEBAR ====== -->
+  <aside class="side">
+    <h4>الشهر</h4>
+    <button class="filter-btn active" data-filter="month" data-value="all">
+      <span>الكل</span>
+      <span class="count" id="cnt-month-all">52</span>
+    </button>
+    <button class="filter-btn" data-filter="month" data-value="1">
+      <span><span class="lbl">الأول · تأسيس الثقة</span><span class="sub">MAY 30 → JUN 26</span></span>
+      <span class="count">16</span>
+    </button>
+    <button class="filter-btn" data-filter="month" data-value="2">
+      <span><span class="lbl">الثاني · تعميق الخبرة</span><span class="sub">JUN 27 → JUL 24</span></span>
+      <span class="count">16</span>
+    </button>
+    <button class="filter-btn" data-filter="month" data-value="3">
+      <span><span class="lbl">الثالث · حصاد التفاعل</span><span class="sub">JUL 25 → AUG 28</span></span>
+      <span class="count">20</span>
+    </button>
+
+    <h4>ركيزة المحتوى</h4>
+    <button class="filter-btn active" data-filter="pillar" data-value="all">
+      <span>كل الركائز</span>
+      <span class="count">52</span>
+    </button>
+    <button class="filter-btn" data-filter="pillar" data-value="freevalue">
+      <span><span class="swatch" style="background:var(--orange)"></span>Free Value · السبت</span>
+      <span class="count">13</span>
+    </button>
+    <button class="filter-btn" data-filter="pillar" data-value="interior">
+      <span><span class="swatch" style="background:var(--yellow)"></span>Interior · الاثنين</span>
+      <span class="count">13</span>
+    </button>
+    <button class="filter-btn" data-filter="pillar" data-value="watchout">
+      <span><span class="swatch" style="background:var(--red)"></span>خد بالك · الأربعاء</span>
+      <span class="count">13</span>
+    </button>
+    <button class="filter-btn" data-filter="pillar" data-value="projects">
+      <span><span class="swatch" style="background:var(--ink)"></span>مشاريع · الخميس</span>
+      <span class="count">13</span>
+    </button>
+
+    <h4>الأسبوع</h4>
+    <div id="weekFilters"></div>
+  </aside>
+
+  <!-- ====== MAIN ====== -->
+  <main class="main">
+
+    <div class="head-wrap">
+      <div>
+        <div class="meta">CONTENT DASHBOARD · Q2-Q3 2026</div>
+        <h1>كل <span class="o">بوست</span><br>في مكانه.</h1>
+      </div>
+      <div class="view-toggle" style="margin-bottom:0">
+        <button class="active" data-view="grid">Grid</button>
+        <button data-view="list">List</button>
+      </div>
+    </div>
+
+    <div class="stats-strip">
+      <div class="stat">
+        <div class="n" id="stat-total">52<span class="o">/</span></div>
+        <div class="lbl">Total Posts</div>
+        <div class="delta">من إجمالي 52 في الخطة</div>
+      </div>
+      <div class="stat">
+        <div class="n" id="stat-weeks">13<span class="o">w</span></div>
+        <div class="lbl">Weeks</div>
+        <div class="delta">من 13 أسبوع</div>
+      </div>
+      <div class="stat">
+        <div class="n" id="stat-pillars">4<span class="o">×</span></div>
+        <div class="lbl">Pillars</div>
+        <div class="delta">السبت · الاثنين · الأربعاء · الخميس</div>
+      </div>
+      <div class="stat">
+        <div class="n" id="stat-reels"><span class="o">~</span>30</div>
+        <div class="lbl">Reels / Videos</div>
+        <div class="delta">60–90 ثانية لكل واحد</div>
+      </div>
+      <div class="stat">
+        <div class="n" id="stat-saves"><span class="o">↑</span>20%</div>
+        <div class="lbl">Engagement Target</div>
+        <div class="delta">نمو شهري على الـ Engagement</div>
+      </div>
+    </div>
+
+    <div class="filter-banner" id="filterBanner"></div>
+
+    <div class="grid-view" id="gridView"></div>
+
+    <div class="list-view" id="listView" style="display:none">
+      <div class="row head">
+        <div>#</div>
+        <div>WEEK</div>
+        <div>DATE</div>
+        <div>PILLAR</div>
+        <div>TITLE</div>
+        <div>FORMAT</div>
+        <div></div>
+      </div>
+      <div id="listRows"></div>
+    </div>
+
+    <div class="empty" id="empty" style="display:none">
+      <h3>مفيش بوستات تطابق الفلتر ده</h3>
+      <p>جرّب تشيل بعض الفلاتر.</p>
+    </div>
+
+  </main>
+</div>
+
+<!-- ====== MODAL ====== -->
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="left">
+        <div class="top">
+          <span class="wk" id="m-wk">W01</span>
+          <span>·</span>
+          <span id="m-date">السبت 30 مايو</span>
+          <span>·</span>
+          <span class="dot" id="m-dot"></span>
+          <span id="m-pillar">FREE VALUE</span>
+        </div>
+        <h2 id="m-title">—</h2>
+      </div>
+      <button class="close-btn" id="closeBtn" aria-label="إغلاق">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="post-preview" id="m-preview">
+        <div class="meta-top">
+          <span id="m-prev-tag">FREE VALUE</span>
+          <span id="m-prev-num">EP.01</span>
+        </div>
+        <div class="hook-big" id="m-prev-hook"></div>
+        <div class="brand-bot">
+          <span>ZMZM</span>
+          <span id="m-prev-format">REEL 60–90s</span>
+        </div>
+      </div>
+
+      <div class="field hook">
+        <div class="k">— Hook</div>
+        <div class="v" id="m-hook"></div>
+      </div>
+      <div class="field">
+        <div class="k">— Format</div>
+        <div class="v" id="m-format"></div>
+      </div>
+      <div class="field cta">
+        <div class="k">— Engagement CTA</div>
+        <div class="v" id="m-cta"></div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button id="prevBtn">← السابق</button>
+      <button id="nextBtn">التالي →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const P = window.PLAN;
+
+  // Flatten all posts with week/month/index
+  const ALL = [];
+  P.weeks.forEach(w => {
+    w.posts.forEach(p => {
+      ALL.push({ ...p, week: w.n, month: w.month, weekRange: w.range, idx: ALL.length });
+    });
+  });
+
+  // Build week filter buttons
+  const weekFilters = document.getElementById('weekFilters');
+  let wkHtml = `<button class="filter-btn active" data-filter="week" data-value="all">
+      <span>كل الأسابيع</span><span class="count">13</span></button>`;
+  P.weeks.forEach(w => {
+    wkHtml += `<button class="filter-btn" data-filter="week" data-value="${w.n}">
+      <span><span class="lbl">W${String(w.n).padStart(2,'0')} · ${w.range}</span></span>
+      <span class="count">4</span>
+    </button>`;
+  });
+  weekFilters.innerHTML = wkHtml;
+
+  // State
+  const state = { month: 'all', pillar: 'all', week: 'all', view: 'grid' };
+
+  // Filter logic
+  function getFiltered() {
+    return ALL.filter(p => {
+      if (state.month !== 'all' && p.month !== Number(state.month)) return false;
+      if (state.pillar !== 'all' && p.pillar !== state.pillar) return false;
+      if (state.week !== 'all' && p.week !== Number(state.week)) return false;
+      return true;
+    });
+  }
+
+  // Render banner
+  function renderBanner() {
+    const banner = document.getElementById('filterBanner');
+    const tags = [];
+    if (state.month !== 'all') {
+      const m = P.months.find(mm => mm.n === Number(state.month));
+      tags.push({label: `${m.label} — ${m.theme}`, filter: 'month'});
+    }
+    if (state.pillar !== 'all') {
+      const p = window.PILLAR_BY_KEY[state.pillar];
+      tags.push({label: `${p.title} (${p.day})`, filter: 'pillar'});
+    }
+    if (state.week !== 'all') {
+      const w = P.weeks.find(ww => ww.n === Number(state.week));
+      tags.push({label: `أسبوع ${state.week} · ${w.range}`, filter: 'week'});
+    }
+    if (tags.length === 0) { banner.innerHTML = ''; return; }
+    banner.innerHTML = `
+      <span class="lbl">Active filters ·</span>
+      ${tags.map(t => `<span class="tag">${t.label} <span class="x" data-clear="${t.filter}">×</span></span>`).join('')}
+      <button class="clear-all" id="clearAll">Clear all ×</button>
+    `;
+    banner.querySelectorAll('.x').forEach(x => {
+      x.onclick = () => { state[x.dataset.clear] = 'all'; syncFilterButtons(); render(); };
+    });
+    document.getElementById('clearAll').onclick = () => {
+      state.month = state.pillar = state.week = 'all';
+      syncFilterButtons(); render();
+    };
+  }
+
+  function syncFilterButtons() {
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      const f = btn.dataset.filter, v = btn.dataset.value;
+      btn.classList.toggle('active', String(state[f]) === String(v));
+    });
+  }
+
+  // Render grid
+  function render() {
+    const items = getFiltered();
+    document.getElementById('stat-total').innerHTML = `${items.length}<span class="o">/</span>`;
+    document.getElementById('stat-weeks').innerHTML = `${new Set(items.map(i=>i.week)).size}<span class="o">w</span>`;
+    document.getElementById('stat-pillars').innerHTML = `${new Set(items.map(i=>i.pillar)).size}<span class="o">×</span>`;
+    const reelsLike = items.filter(i => /reel|vlog|فيديو/i.test(i.format)).length;
+    document.getElementById('stat-reels').innerHTML = `<span class="o">~</span>${reelsLike}`;
+
+    document.getElementById('empty').style.display = items.length ? 'none' : 'block';
+
+    // Grid
+    document.getElementById('gridView').innerHTML = items.map(p => {
+      const pillar = window.PILLAR_BY_KEY[p.pillar];
+      return `
+        <div class="post-card" data-pillar="${p.pillar}" data-idx="${p.idx}">
+          <div class="accent"></div>
+          <div class="body">
+            <div class="meta-row">
+              <span class="pillar-name"><span class="dot"></span>${pillar.dayEn}</span>
+              <span class="wk">W${String(p.week).padStart(2,'0')}</span>
+            </div>
+            <div class="date">${p.day} · ${p.date}</div>
+            <h3>${p.title}</h3>
+            <div class="hook">"${p.hook}"</div>
+            <div class="format">
+              <span>${p.format}</span>
+              <span class="open">→</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // List
+    document.getElementById('listRows').innerHTML = items.map((p, i) => {
+      const pillar = window.PILLAR_BY_KEY[p.pillar];
+      return `
+        <div class="row" data-pillar="${p.pillar}" data-idx="${p.idx}">
+          <div>${String(i+1).padStart(2,'0')}</div>
+          <div class="wk">W${String(p.week).padStart(2,'0')}</div>
+          <div>${p.day} ${p.date}</div>
+          <div class="pillar-tag"><span class="dot"></span>${pillar.dayEn}</div>
+          <div class="title">${p.title}</div>
+          <div class="format">${p.format}</div>
+          <div class="open-btn">→</div>
+        </div>
+      `;
+    }).join('');
+
+    // Bind cards
+    document.querySelectorAll('[data-idx]').forEach(el => {
+      el.onclick = () => openModal(Number(el.dataset.idx));
+    });
+
+    renderBanner();
+  }
+
+  // Filter btn listeners
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.onclick = () => {
+      const f = btn.dataset.filter, v = btn.dataset.value;
+      state[f] = v;
+      syncFilterButtons();
+      render();
+    };
+  });
+
+  // View toggle
+  document.querySelectorAll('.view-toggle button').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.view = btn.dataset.view;
+      document.getElementById('gridView').style.display = state.view === 'grid' ? 'grid' : 'none';
+      document.getElementById('listView').style.display = state.view === 'list' ? 'block' : 'none';
+    };
+  });
+
+  // ====== MODAL ======
+  let currentIdx = 0;
+  const modal = document.getElementById('modal');
+  function openModal(idx) {
+    currentIdx = idx;
+    const p = ALL[idx];
+    const pillar = window.PILLAR_BY_KEY[p.pillar];
+    document.getElementById('m-wk').textContent = 'W' + String(p.week).padStart(2,'0');
+    document.getElementById('m-date').textContent = p.day + ' ' + p.date;
+    document.getElementById('m-pillar').textContent = pillar.title;
+    const dot = document.getElementById('m-dot');
+    const dotColors = { freevalue: 'var(--orange)', interior: 'var(--yellow)', watchout: 'var(--red)', projects: 'var(--ink)' };
+    dot.style.background = dotColors[p.pillar];
+    document.getElementById('m-title').textContent = p.title;
+    document.getElementById('m-hook').textContent = p.hook;
+    document.getElementById('m-format').textContent = p.format;
+    document.getElementById('m-cta').textContent = p.cta;
+
+    const prev = document.getElementById('m-preview');
+    prev.dataset.pillar = p.pillar;
+    document.getElementById('m-prev-tag').textContent = pillar.title + ' · ' + p.day;
+    document.getElementById('m-prev-num').textContent = 'W' + String(p.week).padStart(2,'0') + ' · ' + p.date;
+    document.getElementById('m-prev-hook').textContent = p.hook;
+    document.getElementById('m-prev-format').textContent = p.format;
+
+    document.getElementById('prevBtn').disabled = idx === 0;
+    document.getElementById('nextBtn').disabled = idx === ALL.length - 1;
+
+    modal.classList.add('open');
+  }
+  function closeModal() { modal.classList.remove('open'); }
+  document.getElementById('closeBtn').onclick = closeModal;
+  modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+  document.getElementById('prevBtn').onclick = () => openModal(Math.max(0, currentIdx - 1));
+  document.getElementById('nextBtn').onclick = () => openModal(Math.min(ALL.length - 1, currentIdx + 1));
+  document.addEventListener('keydown', (e) => {
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape') closeModal();
+    if (e.key === 'ArrowLeft') document.getElementById('nextBtn').click(); // RTL
+    if (e.key === 'ArrowRight') document.getElementById('prevBtn').click();
+  });
+
+  render();
+});
+</script>
+</body>
+</html>

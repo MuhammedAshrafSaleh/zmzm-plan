@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZMZM Decoration — Marketing Plan</title>
+<link rel="stylesheet" href="brand.css">
+<style>
+  body { background: var(--ink); color: var(--white); min-height: 100vh; overflow-x: hidden; }
+
+  .grid-bg {
+    position: fixed; inset: 0; pointer-events: none; opacity: .04;
+    background-image:
+      linear-gradient(to right, var(--white) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--white) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+
+  .nav {
+    position: relative; z-index: 10;
+    padding: 28px 56px; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--hairline-light);
+  }
+  .nav .right { display: flex; gap: 28px; align-items: center; font-family: var(--font-en);
+    font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-300); }
+  .nav .right .live { color: var(--orange); display: flex; align-items: center; gap: 8px; }
+  .nav .right .live .pulse { width: 8px; height: 8px; background: var(--orange); border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+
+  .hero {
+    position: relative; z-index: 5;
+    padding: 80px 56px 60px;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 80px; align-items: end;
+  }
+
+  .hero h1 {
+    font-size: clamp(56px, 8vw, 128px);
+    font-weight: 900; line-height: 0.92; letter-spacing: -0.03em;
+    margin: 0 0 24px;
+  }
+  .hero h1 .accent { color: var(--orange); }
+  .hero h1 .outline {
+    -webkit-text-stroke: 2px var(--white); color: transparent;
+  }
+  .hero .lead {
+    font-size: 19px; line-height: 1.6; color: var(--ink-200); max-width: 540px;
+    margin-bottom: 36px;
+  }
+  .hero .meta {
+    display: flex; flex-wrap: wrap; gap: 12px;
+  }
+  .hero .meta .chip { background: rgba(255,255,255,.08); color: var(--white); border: 1px solid var(--hairline-light); }
+  .hero .meta .chip.orange { background: var(--orange); border-color: var(--orange); color: var(--white); }
+
+  .hero-side {
+    border-inline-start: 1px solid var(--hairline-light);
+    padding-inline-start: 40px;
+  }
+  .hero-side .stat-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 36px 0;
+    border-bottom: 1px solid var(--hairline-light);
+    padding-bottom: 28px; margin-bottom: 28px;
+  }
+  .stat .n { font-family: var(--font-en); font-size: 56px; font-weight: 700; line-height: 1; }
+  .stat .n .small { font-size: 24px; color: var(--orange); }
+  .stat .lbl { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-300); margin-top: 8px; font-family: var(--font-en); }
+
+  .hero-side .when { color: var(--ink-200); font-size: 14px; line-height: 1.6; }
+  .hero-side .when strong { color: var(--white); display: block; font-size: 18px; margin-bottom: 4px; }
+
+  /* Outputs grid */
+  .outputs {
+    position: relative; z-index: 5;
+    padding: 60px 56px 60px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+
+  /* Sub-plan section */
+  .subplan-section {
+    position: relative; z-index: 5;
+    padding: 0 56px 100px;
+  }
+  .subplan-section .subplan-head {
+    display: flex; justify-content: space-between; align-items: end;
+    margin-bottom: 24px;
+    padding-top: 40px; border-top: 1px solid var(--hairline-light);
+  }
+  .subplan-section .subplan-head .left {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .subplan-section .subplan-head .kicker {
+    font-family: var(--font-en); font-size: 11px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--orange); font-weight: 600;
+  }
+  .subplan-section .subplan-head h2 {
+    font-size: 40px; font-weight: 900; letter-spacing: -0.02em;
+    margin: 0; color: var(--white);
+  }
+  .subplan-section .subplan-head .note {
+    font-size: 14px; color: var(--ink-300); max-width: 380px; line-height: 1.55;
+    text-align: end;
+  }
+
+  .subplan-card {
+    background: var(--ink-soft); border: 1px solid var(--hairline-light);
+    border-radius: var(--r-lg); padding: 32px;
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 32px; align-items: center;
+    text-decoration: none; color: var(--white);
+    transition: transform .25s, border-color .25s, background .25s;
+  }
+  .subplan-card:hover {
+    transform: translateY(-2px); border-color: var(--orange); background: #161616;
+  }
+  .subplan-card .main { display: flex; flex-direction: column; gap: 12px; }
+  .subplan-card .num {
+    font-family: var(--font-en); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.2em; color: var(--orange);
+  }
+  .subplan-card .num::before { content: ''; display: inline-block;
+    width: 24px; height: 1.5px; background: var(--orange);
+    vertical-align: middle; margin-inline-end: 10px; }
+  .subplan-card h3 {
+    font-size: 32px; font-weight: 900; letter-spacing: -0.02em;
+    margin: 0; line-height: 1.1;
+  }
+  .subplan-card p {
+    font-size: 14.5px; line-height: 1.6; color: var(--ink-200);
+    margin: 0; max-width: 600px;
+  }
+  .subplan-card .stats-row {
+    display: flex; gap: 24px; margin-top: 8px;
+  }
+  .subplan-card .stats-row .stat {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .subplan-card .stats-row .stat .n {
+    font-family: var(--font-en); font-size: 28px; font-weight: 700; color: var(--white);
+    line-height: 1;
+  }
+  .subplan-card .stats-row .stat .n .o { color: var(--orange); }
+  .subplan-card .stats-row .stat .l {
+    font-family: var(--font-en); font-size: 10.5px; letter-spacing: 0.16em;
+    color: var(--ink-300); text-transform: uppercase;
+  }
+  .subplan-card .arrow-btn {
+    flex: none;
+    width: 80px; height: 80px; border-radius: 50%;
+    background: var(--orange); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 700;
+    transition: transform .2s;
+  }
+  .subplan-card:hover .arrow-btn { transform: scale(1.08); }
+
+  .output-card {
+    position: relative; overflow: hidden;
+    background: var(--ink-soft);
+    border: 1px solid var(--hairline-light);
+    border-radius: var(--r-lg);
+    padding: 32px 28px;
+    min-height: 420px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    text-decoration: none; color: var(--white);
+    transition: transform .25s ease, border-color .25s ease, background .25s ease;
+  }
+  .output-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--orange);
+    background: #161616;
+  }
+  .output-card .num {
+    font-family: var(--font-en); font-size: 13px; font-weight: 600;
+    letter-spacing: 0.18em; color: var(--ink-300);
+  }
+  .output-card .num::before { content: ''; display: inline-block; width: 24px; height: 1px;
+    background: var(--ink-300); vertical-align: middle; margin-inline-end: 10px; }
+  .output-card h3 {
+    font-size: 42px; line-height: 1; font-weight: 900; margin: 28px 0 12px;
+    letter-spacing: -0.02em;
+  }
+  .output-card .en {
+    font-family: var(--font-en); font-size: 13px; color: var(--orange);
+    letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500;
+  }
+  .output-card p {
+    font-size: 14.5px; line-height: 1.65; color: var(--ink-200); margin: 20px 0 0;
+  }
+  .output-card .footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 24px; border-top: 1px solid var(--hairline-light); margin-top: 24px;
+  }
+  .output-card .footer .tag {
+    font-family: var(--font-en); font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--ink-300);
+  }
+  .output-card .footer .open {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--white); color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; transition: background .2s; font-weight: 700;
+  }
+  .output-card:hover .footer .open { background: var(--orange); color: var(--white); }
+
+  /* Card decoration */
+  .output-card .deco {
+    position: absolute; top: 28px; left: 28px;
+    display: flex; flex-direction: column; gap: 6px;
+    transform: skewX(-22deg);
+  }
+  .output-card .deco .b { height: 8px; border-radius: 1px; }
+  .output-card[data-kind="dashboard"] .deco .b1 { width: 36px; background: var(--yellow); }
+  .output-card[data-kind="dashboard"] .deco .b2 { width: 44px; background: var(--orange); }
+  .output-card[data-kind="dashboard"] .deco .b3 { width: 28px; background: var(--red); }
+
+  .output-card[data-kind="pitch"] .deco .b1 { width: 28px; background: var(--yellow); }
+  .output-card[data-kind="pitch"] .deco .b2 { width: 50px; background: var(--orange); }
+  .output-card[data-kind="pitch"] .deco .b3 { width: 36px; background: var(--red); }
+
+  .output-card[data-kind="deck"] .deco .b1 { width: 44px; background: var(--yellow); }
+  .output-card[data-kind="deck"] .deco .b2 { width: 36px; background: var(--orange); }
+  .output-card[data-kind="deck"] .deco .b3 { width: 50px; background: var(--red); }
+
+  /* Footer band */
+  .footer-band {
+    position: relative; z-index: 5;
+    border-top: 1px solid var(--hairline-light);
+    padding: 28px 56px; display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-en); font-size: 12px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-300);
+  }
+  .footer-band .slogan { color: var(--orange); font-family: var(--font-ar); text-transform: none;
+    letter-spacing: 0; font-size: 14px; font-weight: 700; }
+
+  /* Side label */
+  .vlabel {
+    position: fixed; top: 50%; right: 18px; transform: translateY(-50%) rotate(180deg);
+    writing-mode: vertical-rl;
+    font-family: var(--font-en); font-size: 10.5px; letter-spacing: 0.32em;
+    color: var(--ink-300); z-index: 8;
+  }
+  .vlabel .dot { display: inline-block; width: 5px; height: 5px; background: var(--orange);
+    border-radius: 50%; margin: 8px 0; }
+
+  @media (max-width: 980px) {
+    .hero { grid-template-columns: 1fr; gap: 40px; padding: 60px 28px; }
+    .hero-side { border: none; padding: 0; }
+    .outputs { grid-template-columns: 1fr; padding: 40px 28px 80px; }
+    .nav, .footer-band { padding-inline: 28px; }
+  }
+</style>
+</head>
+<body data-screen-label="00 Landing">
+
+<div class="grid-bg"></div>
+
+<div class="vlabel">
+  ZMZM <span class="dot"></span> MARKETING PLAN
+  <span class="dot"></span> 2026
+</div>
+
+<nav class="nav">
+  <a class="zmzm-mark invert" href="#">
+    <div class="bars">
+      <div class="bar b1"></div>
+      <div class="bar b2"></div>
+      <div class="bar b3"></div>
+    </div>
+    <div class="wordmark">ZMZM<small>DECORATION</small></div>
+  </a>
+  <div class="right">
+    <span>Marketing Plan / Q2-Q3 2026</span>
+    <span class="live"><span class="pulse"></span> 13 WEEKS · 52 POSTS</span>
+  </div>
+</nav>
+
+<section class="hero">
+  <div>
+    <div class="eyebrow"><span class="dot"></span>MARKETING PLAN · MAY → AUG 2026</div>
+    <h1 class="display" style="margin-top:24px">
+      خطة محتوى<br>
+      <span class="accent">3 شهور</span><br>
+      <span class="outline">للرحاب.</span>
+    </h1>
+    <p class="lead">
+      52 بوست على Facebook · Instagram · YouTube. أربع ركائز محتوى ثابتة، نبرة براند ودودة قريبة، وهدف واضح:
+      نبني تفاعل وجمهور حقيقي حوالين <strong style="color:var(--white)">Zmzm Decoration</strong> بدون بيع مباشر.
+    </p>
+    <div class="meta">
+      <span class="chip orange">معانا بيتك أمانة</span>
+      <span class="chip">Facebook</span>
+      <span class="chip">Instagram</span>
+      <span class="chip">YouTube</span>
+    </div>
+  </div>
+
+  <aside class="hero-side">
+    <div class="stat-row">
+      <div class="stat">
+        <div class="n">13<span class="small">w</span></div>
+        <div class="lbl">Weeks</div>
+      </div>
+      <div class="stat">
+        <div class="n">52<span class="small">p</span></div>
+        <div class="lbl">Posts</div>
+      </div>
+      <div class="stat">
+        <div class="n">4<span class="small">×</span></div>
+        <div class="lbl">Pillars</div>
+      </div>
+      <div class="stat">
+        <div class="n">3<span class="small">m</span></div>
+        <div class="lbl">Months</div>
+      </div>
+    </div>
+    <div class="when">
+      <strong>30 مايو → 28 أغسطس 2026</strong>
+      الجمهور: Class A / B / B+ — الرحاب<br>
+      الهدف: Engagement & Audience Growth
+    </div>
+  </aside>
+</section>
+
+<section class="outputs">
+
+  <a class="output-card" data-kind="dashboard" href="Dashboard.html">
+    <div class="deco">
+      <div class="b b1"></div><div class="b b2"></div><div class="b b3"></div>
+    </div>
+    <div>
+      <div class="num">01 · INTERACTIVE</div>
+      <h3>Dashboard<br>تفاعلي</h3>
+      <div class="en">Filter · Compare · Explore</div>
+      <p>لوحة تحكم تفاعلية فيها كل الـ 52 بوست. فلاتر بالأسبوع، الشهر، نوع المحتوى. اعرض كل بوست بالتفاصيل والكابشن والـ Hook.</p>
+    </div>
+    <div class="footer">
+      <span class="tag">Best for · Internal Review</span>
+      <span class="open">←</span>
+    </div>
+  </a>
+
+  <a class="output-card" data-kind="pitch" href="Pitch Document.html">
+    <div class="deco">
+      <div class="b b1"></div><div class="b b2"></div><div class="b b3"></div>
+    </div>
+    <div>
+      <div class="num">02 · DOCUMENT</div>
+      <h3>Pitch<br>Document</h3>
+      <div class="en">Scrollable · Detailed · Print-ready</div>
+      <p>عرض طويل قابل للقراءة من فوق لتحت — الاستراتيجية كاملة، الـ pillars، التقويم الشهري والأسبوعي، نماذج كابشن، KPIs.</p>
+    </div>
+    <div class="footer">
+      <span class="tag">Best for · Client Read</span>
+      <span class="open">←</span>
+    </div>
+  </a>
+
+  <a class="output-card" data-kind="deck" href="Presentation Deck.html">
+    <div class="deco">
+      <div class="b b1"></div><div class="b b2"></div><div class="b b3"></div>
+    </div>
+    <div>
+      <div class="num">03 · DECK</div>
+      <h3>Presentation<br>Deck</h3>
+      <div class="en">Slides · Big-screen · Pitch-ready</div>
+      <p>عرض شرائح Premium بنفس التصميم. مناسب للاجتماعات والـ pitch المباشر. تنقل بالكيبورد أو الـ swipe.</p>
+    </div>
+    <div class="footer">
+      <span class="tag">Best for · Live Meeting</span>
+      <span class="open">←</span>
+    </div>
+  </a>
+
+</section>
+
+<section class="subplan-section">
+  <div class="subplan-head">
+    <div class="left">
+      <div class="kicker">— FREE VALUE SUB-PLAN · NEW</div>
+      <h2>السكريبتات الكاملة لفيديوهات Free Value</h2>
+    </div>
+    <div class="note">
+      وثيقة منفصلة فيها سكريبت كل فيديو من الـ 14 — جاهزة للمشي خطوة بخطوة مع صاحب الشركة، أسبوع بأسبوع.
+    </div>
+  </div>
+
+  <a class="subplan-card" href="Free Value Videos.html">
+    <div class="main">
+      <div class="num">04 · DEEP-DIVE</div>
+      <h3>Free Value Videos · 14 سكريبت</h3>
+      <p>كل فيديو بـ Hook، فكرة، أهداف، مشكلة، قيمة، ربط بالشركة، وCTA. مرتب أسبوع بأسبوع للمراجعة والإنتاج.</p>
+      <div class="stats-row">
+        <div class="stat"><div class="n">14<span class="o">/</span></div><div class="l">Videos</div></div>
+        <div class="stat"><div class="n">14<span class="o">w</span></div><div class="l">Weeks</div></div>
+        <div class="stat"><div class="n">~90<span class="o">s</span></div><div class="l">Each</div></div>
+        <div class="stat"><div class="n">5<span class="o">×</span></div><div class="l">Sections / Video</div></div>
+      </div>
+    </div>
+    <div class="arrow-btn">←</div>
+  </a>
+</section>
+
+<footer class="footer-band">
+  <span>© ZMZM DECORATION 2026</span>
+  <span class="slogan">معانا بيتك أمانة 🤍</span>
+  <span>PREPARED · MAY 2026</span>
+</footer>
+
+</body>
+</html>

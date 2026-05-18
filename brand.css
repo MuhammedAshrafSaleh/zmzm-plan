@@ -1,0 +1,175 @@
+/* ================================================================
+   ZMZM DECORATION — Brand System
+   Premium & Bold · Agency Feel · RTL Arabic
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Readex+Pro:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ---- Brand colors (from logo) ---- */
+  --ink: #0a0a0a;
+  --ink-soft: #1a1a1a;
+  --ink-700: #2a2a2a;
+  --ink-500: #4a4a4a;
+  --ink-300: #8a8a8a;
+  --ink-200: #c8c5bf;
+  --ink-100: #e6e2db;
+
+  --paper: #f6f3ec;     /* warm off-white */
+  --paper-2: #ece7dc;
+  --white: #ffffff;
+
+  --orange: #F37021;    /* primary */
+  --orange-dark: #d85a10;
+  --orange-soft: #fde7d4;
+  --yellow: #FBB040;    /* light accent */
+  --red: #DC2A1E;       /* deep accent */
+
+  --hairline: rgba(10, 10, 10, 0.12);
+  --hairline-strong: rgba(10, 10, 10, 0.24);
+  --hairline-light: rgba(255, 255, 255, 0.14);
+
+  /* ---- Type ---- */
+  --font-ar: 'Tajawal', 'Readex Pro', system-ui, sans-serif;
+  --font-en: 'Space Grotesk', 'Tajawal', system-ui, sans-serif;
+
+  /* ---- Geometry ---- */
+  --r-sm: 4px;
+  --r-md: 10px;
+  --r-lg: 18px;
+  --r-xl: 28px;
+
+  /* ---- Shadows ---- */
+  --sh-1: 0 1px 2px rgba(10,10,10,.06), 0 4px 12px rgba(10,10,10,.04);
+  --sh-2: 0 12px 32px rgba(10,10,10,.08), 0 2px 6px rgba(10,10,10,.04);
+  --sh-3: 0 32px 64px rgba(10,10,10,.16), 0 4px 12px rgba(10,10,10,.06);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-ar);
+  font-weight: 400;
+  color: var(--ink);
+  background: var(--paper);
+  direction: rtl;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- Type system ---- */
+.eyebrow {
+  font-family: var(--font-en);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+}
+.eyebrow .dot {
+  display: inline-block; width: 6px; height: 6px;
+  background: var(--orange); border-radius: 50%;
+  margin-inline-end: 8px; transform: translateY(-2px);
+}
+
+.display {
+  font-family: var(--font-ar);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+h1, h2, h3, h4 { font-family: var(--font-ar); font-weight: 800; letter-spacing: -0.01em; }
+
+/* ---- Logo mark (geometric, clean) ---- */
+.zmzm-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+}
+.zmzm-mark .bars {
+  display: flex; flex-direction: column; gap: 4px;
+  transform: skewX(-22deg);
+}
+.zmzm-mark .bar {
+  height: 7px; width: 28px;
+  border-radius: 1px;
+}
+.zmzm-mark .bar.b1 { background: var(--yellow); }
+.zmzm-mark .bar.b2 { background: var(--orange); width: 32px; }
+.zmzm-mark .bar.b3 { background: var(--red); width: 22px; }
+.zmzm-mark .wordmark {
+  font-family: var(--font-en);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.zmzm-mark .wordmark small {
+  display: block;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  color: var(--orange);
+  margin-top: 4px;
+}
+
+.zmzm-mark.invert .wordmark { color: var(--white); }
+
+/* ---- Big logo (hero) ---- */
+.zmzm-big {
+  display: inline-flex; align-items: center; gap: 28px;
+}
+.zmzm-big .bars { display: flex; flex-direction: column; gap: 9px; transform: skewX(-22deg); }
+.zmzm-big .bar { height: 16px; border-radius: 2px; }
+.zmzm-big .bar.b1 { background: var(--yellow); width: 64px; }
+.zmzm-big .bar.b2 { background: var(--orange); width: 76px; }
+.zmzm-big .bar.b3 { background: var(--red); width: 52px; }
+.zmzm-big .wordmark {
+  font-family: var(--font-en);
+  font-weight: 800;
+  font-size: 48px;
+  letter-spacing: 0.02em;
+  line-height: 0.95;
+}
+.zmzm-big .wordmark small {
+  display: block; font-size: 14px; font-weight: 500;
+  letter-spacing: 0.4em; color: var(--orange); margin-top: 8px;
+}
+
+/* ---- Reusable components ---- */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+  background: var(--ink); color: var(--white);
+  font-family: var(--font-en); letter-spacing: 0.04em;
+}
+.chip.outline { background: transparent; color: var(--ink); border: 1px solid var(--hairline-strong); }
+.chip.orange { background: var(--orange); }
+.chip.yellow { background: var(--yellow); color: var(--ink); }
+.chip.red { background: var(--red); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 22px; border-radius: 999px;
+  font-family: var(--font-ar); font-weight: 700; font-size: 15px;
+  text-decoration: none; cursor: pointer; border: none;
+  transition: transform .15s ease, background .15s ease;
+}
+.btn-primary { background: var(--ink); color: var(--white); }
+.btn-primary:hover { background: var(--orange); transform: translateY(-1px); }
+.btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+.btn-ghost:hover { background: var(--ink); color: var(--white); }
+
+.arrow { display: inline-block; transform: scaleX(-1); }
+
+/* Skewed bars used as ornamental motif */
+.motif-bars {
+  display: inline-flex; flex-direction: column; gap: 6px;
+  transform: skewX(-22deg);
+}
+.motif-bars .bar { height: 10px; border-radius: 1.5px; }
