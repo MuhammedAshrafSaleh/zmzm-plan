@@ -359,6 +359,126 @@ section.videos-section { padding: 100px 0 60px; border-top: 1px solid var(--hair
 .divider-strip .b3 { width: 18px; background: var(--red); }
 
 /* =================================================================
+   POST-READY CAPTION — full script formatted for social
+   ================================================================= */
+.post-caption {
+  position: relative;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(217,98,32,0.05), transparent 60%),
+    var(--paper);
+  border-top: 1px solid var(--hairline);
+  padding: 40px 36px 48px;
+}
+.post-caption::before {
+  content: ''; position: absolute; inset-inline: 0; top: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--yellow), var(--orange) 55%, var(--red));
+}
+
+.post-caption .post-head {
+  max-width: 720px; margin: 0 auto 22px;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 16px; flex-wrap: wrap;
+}
+.post-caption .post-head .label {
+  font-family: var(--font-en); font-size: 11px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--ink-500); font-weight: 700;
+  display: flex; align-items: center; gap: 12px;
+}
+.post-caption .post-head .label::before {
+  content: ''; width: 28px; height: 1.5px; background: var(--orange);
+}
+.post-caption .post-head .label .ar {
+  font-family: var(--font-ar); letter-spacing: 0; color: var(--ink);
+  font-size: 13px; text-transform: none; font-weight: 700;
+}
+
+.copy-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 18px; border-radius: 999px;
+  background: var(--ink); color: var(--white);
+  border: 1px solid var(--ink); cursor: pointer;
+  font-family: var(--font-ar); font-size: 13px; font-weight: 700;
+  transition: background .15s ease, color .15s ease, transform .12s ease;
+}
+.copy-btn:hover { background: var(--orange); border-color: var(--orange); }
+.copy-btn:active { transform: translateY(1px); }
+.copy-btn.copied { background: var(--orange); border-color: var(--orange); }
+.copy-btn .ic {
+  font-family: var(--font-en); font-size: 14px; line-height: 1;
+}
+
+.post-body {
+  max-width: 720px; margin: 0 auto;
+  background: var(--white);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 40px 44px 36px;
+  position: relative;
+  box-shadow: 0 1px 0 var(--hairline), 0 2px 0 -1px var(--hairline);
+}
+.post-body::before {
+  content: ''; position: absolute; top: 18px; inset-inline-start: 18px;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--orange);
+  box-shadow: 14px 0 0 var(--yellow), 28px 0 0 var(--red);
+  opacity: 0.6;
+}
+
+.post-body p { margin: 0; }
+.post-body .post-hook {
+  font-size: 22px; line-height: 1.45; font-weight: 800;
+  color: var(--ink); letter-spacing: -0.01em;
+  text-wrap: balance;
+  margin-top: 12px;
+}
+.post-body .post-paragraph {
+  font-size: 16px; line-height: 1.85; color: var(--ink);
+  font-weight: 500;
+}
+.post-body .post-paragraph .o { color: var(--orange); font-weight: 800; }
+.post-body .post-paragraph.muted {
+  color: var(--ink-700); font-style: italic;
+  font-size: 15px; line-height: 1.7;
+}
+.post-body .post-paragraph.brand {
+  font-weight: 600; color: var(--ink); line-height: 1.75;
+}
+.post-body .post-paragraph.cta {
+  font-weight: 600; color: var(--ink); line-height: 1.75;
+}
+
+.post-body .post-checks {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.post-body .post-checks li {
+  font-size: 16px; line-height: 1.55; font-weight: 600;
+  color: var(--ink);
+}
+
+.post-body .post-follow {
+  font-size: 15.5px; font-weight: 700;
+  color: var(--ink); line-height: 1.6;
+}
+.post-body .post-follow .name {
+  color: var(--orange);
+}
+
+.post-divider {
+  border: none;
+  height: 1px;
+  width: 100%;
+  background-image: linear-gradient(
+    to right,
+    var(--hairline-strong) 0, var(--hairline-strong) 6px,
+    transparent 6px, transparent 12px
+  );
+  background-size: 12px 1px;
+  margin: 22px 0;
+  opacity: 0.7;
+}
+
+/* =================================================================
    PRODUCTION
    ================================================================= */
 .production-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
@@ -423,4 +543,7 @@ footer.foot {
   section.approach > .head { grid-template-columns: 1fr; gap: 16px; }
   .page { padding: 0 24px; }
   .topbar { padding: 16px 24px; }
+  .post-caption { padding: 28px 18px 36px; }
+  .post-body { padding: 32px 22px 28px; }
+  .post-body .post-hook { font-size: 19px; }
 }
